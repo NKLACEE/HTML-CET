@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="https://i0.hdslb.com/bfs/face/0da8d39b5f5554db8b3bc5b27607a7e50e093883.jpg@240w_240h_1c_1s_!web-avatar-nav.webp"/>
+    <title>四级分数计算器⁽˙³˙⁾</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --background: #f5f7fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui;
+            background: var(--background);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .input-box {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        #totalScore {
+            font-size: 2.5em;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .tooltip {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 CET-4 分数计算器</h1>
+        
+        <div class="input-group">
+            <div class="input-box">
+                <h3>📻 听力部分</h3>
+                <label>正确题数 (0-25):</label>
+                <input type="number" id="listening" min="0" max="25" step="1">
+                <div class="tooltip">共25题，每题约9.96分</div>
+            </div>
+
+            <div class="input-box">
+                <h3>📖 阅读部分</h3>
+                <label>选词填空正确数 (0-10):</label>
+                <input type="number" id="cloze" min="0" max="10" step="1">
+                
+                <label>长篇阅读正确数 (0-10):</label>
+                <input type="number" id="longRead" min="0" max="10" step="1">
+                
+                <label>仔细阅读正确数 (0-10):</label>
+                <input type="number" id="detailRead" min="0" max="10" step="1">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-box">
+                <h3>✍️ 写作翻译</h3>
+                <label>写作分数 (0-106.5):</label>
+                <input type="number" id="writing" min="0" max="106.5" step="0.5">
+                
+                <label>翻译分数 (0-106.5):</label>
+                <input type="number" id="translation" min="0" max="106.5" step="0.5">
+            </div>
+        </div>
+
+        <button onclick="calculateScore()">🚀 立即计算</button>
+
+        <div class="result-box">
+            <h3>🎯 预估成绩</h3>
+            <div id="totalScore">(˘•ω•˘)◞⁽˙³˙⁾</div>
+            <div id="detailScore"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateScore() {
+            // 输入验证
+            const inputs = {
+                listening: validateInput('listening', 0, 25),
+                cloze: validateInput('cloze', 0, 10),
+                longRead: validateInput('longRead', 0, 10),
+                detailRead: validateInput('detailRead', 0, 10),
+                writing: validateInput('writing', 0, 106.5),
+                translation: validateInput('translation', 0, 106.5)
+            };
+
+            // 各部分分数计算
+            const scores = {
+                listening: inputs.listening * 9.96,
+                cloze: inputs.cloze * 3.55,
+                longRead: inputs.longRead * 7.1,
+                detailRead: inputs.detailRead * 14.2,
+                writing: inputs.writing,
+                translation: inputs.translation
+            };
+
+            // 总分计算
+            const total = Object.values(scores).reduce((a, b) => a + b, 0);
+            
+            // 显示结果
+            document.getElementById('totalScore').textContent = Math.round(total);
+            document.getElementById('detailScore').innerHTML = `
+                <p>听力：${scores.listening.toFixed(1)}</p>
+                <p>阅读：${(scores.cloze + scores.longRead + scores.detailRead).toFixed(1)}</p>
+                <p>写作翻译：${(scores.writing + scores.translation).toFixed(1)}</p>
+            `;
+        }
+
+        function validateInput(id, min, max) {
+            const value = parseFloat(document.getElementById(id).value) || 0;
+            return Math.min(Math.max(value, min), max);
+        }
+    </script>
+</body>
+</html>
